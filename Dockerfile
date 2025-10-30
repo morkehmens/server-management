@@ -1,9 +1,20 @@
-FROM alpine:3.21
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+# Use the latest Node.js LTS (20.x) on Alpine Linux
+FROM node:25-alpine
+
+# Set the working directory
 WORKDIR /home/node/app
+
+# Copy package files first for caching
 COPY package*.json ./
-USER node
-RUN npm install
-COPY --chown=node:node . .
+
+# Install dependencies
+RUN npm install --production
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the app port
 EXPOSE 3000
-CMD [ "node", "app.js" ]
+
+# Start the application
+CMD ["node", "app.js"]
